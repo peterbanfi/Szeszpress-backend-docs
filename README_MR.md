@@ -131,31 +131,18 @@ function lowerCaser(body) {
 
 ## products.controller.js
 
-> list: Az összes termék listázása
-> find: Egy termék megjelenítése
-> create: Egy új termék létrehozása
-> update: Egy termék nevének frissítése
-> remove: Egy termék törlése
-> addComment: Egy komment hozzáadása
-> removeComment: Egy komment törlése
-
-> A képek feltöltését a multer csomaggal oldottuk meg. A feltöltést a products.route.js kezeli itt csak megnézzük a create eljárásban, hogy létezik-e feltöltött fájl és ha igen, akkor cask az elérési útvonalát adjuk hozzá a termékhez, mivel szűkös a MLab felhőtárhelyünk.
-
-> Hasonlóképpen teszünk az update-nél is, ha létezik új kép akkor felülírjuk az elérési útvonalat. Viszont ekkor a már létező régi képet is (ha létezik ilyen) töröljük. Ha nem kapunk új fájlt, akkor megtartjuk a régi elérési útvonalat és képet. Ezt manuálisan kell visszarakni mielőtt továbbengednénk a mongoDb parancsot, mivel ez a PUT request-nél nálunk csak annyit jelent, hogy frontenden nem kívántak képet változtani.
-
-> A remove is leellenőrzi, hogy létezik-e feltöltött kép a termék törlése előtt, ha igen akkor töröljük azt is az /uploads mappánkból.
-
-> Add comment Frédi írja
-
-> Remove comment Frédi írja
-
 ```javascript
 const Products = require('../models/products');
 const mongoose = require('mongoose');
 const fs = require('fs');
 mongoose.Promise = require('bluebird');
+```
 
-module.exports = {
+> A képek feltöltését a multer csomaggal oldottuk meg. A feltöltést a products.route.js kezeli.
+
+> list: Az összes termék listázása
+
+```javascript
   list: (req, res) => {
     Products.find({})
       .populate('productCategory', 'categoryName')
@@ -169,7 +156,11 @@ module.exports = {
         });
       });
   },
+```
 
+> find: Egy termék megjelenítése
+
+```javascript
   find: (req, res) => {
     Products.findById(req.params.id)
       .populate('productCategory', 'categoryName')
@@ -198,7 +189,13 @@ module.exports = {
         });
       });
   },
+```
 
+> create: Egy új termék létrehozása
+
+> A create eljárásban megnézzük, hogy létezik-e feltöltött fájl és ha igen, akkor cask az elérési útvonalát adjuk hozzá a termékhez, mivel szűkös a MLab felhőtárhelyünk.
+
+```javascript
   create: (req, res) => {
     let body = JSON.stringify(req.body);
     body = JSON.parse(body);
@@ -217,7 +214,13 @@ module.exports = {
         });
       });
   },
+```
 
+> update: Egy termék nevének frissítése
+
+> Hasonlóképpen teszünk az update-nél is, ha létezik új kép akkor felülírjuk az elérési útvonalat. Viszont ekkor a már létező régi képet is (ha létezik ilyen) töröljük. Ha nem kapunk új fájlt, akkor megtartjuk a régi elérési útvonalat és képet. Ezt manuálisan kell visszarakni mielőtt továbbengednénk a mongoDb parancsot, mivel ez a PUT request-nél nálunk csak annyit jelent, hogy frontenden nem kívántak képet változtani.
+
+```javascript
   update: (req, res) => {
     let body = JSON.stringify(req.body);
     body = JSON.parse(body);
@@ -275,7 +278,13 @@ module.exports = {
         });
     }
   },
+```
 
+> remove: Egy termék törlése
+
+> A remove is leellenőrzi, hogy létezik-e feltöltött kép a termék törlése előtt, ha igen akkor töröljük azt is az /uploads lokális mappánkból.
+
+```javascript
   remove: (req, res) => {
     Products.findByIdAndRemove(req.params.id)
       .then((products) => {
@@ -306,23 +315,29 @@ module.exports = {
         });
       });
   },
+```
 
+> addComment: Egy komment hozzáadása
+
+```javascript
   addComment: (productId, commentId) => Products.findByIdAndUpdate(productId, {
     $push: {
       productComments: commentId,
     },
   }),
+```
 
+> removeComment: Egy komment törlése
+
+```javascript
   removeComment: (productId, commentId) => Products.findByIdAndUpdate(productId, {
     $pull: {
       productComments: commentId,
     },
   }),
-};
 ```
 
 ## server.js
-> pam pam
 
 ```javascript
 const express = require('express');
@@ -337,7 +352,7 @@ const rfs = require('rotating-file-stream');
 const helmet = require('helmet');
 const LocalStrategy = require('passport-local').Strategy;
 const db = require('./config/database.js');
-const User = require('./models/user');
+
 const userRouter = require('./route/user.route');
 const productsRouter = require('./route/products.route');
 const ordersRouter = require('./route/order.route');
@@ -345,11 +360,16 @@ const categoriesRouter = require('./route/categories.route');
 const commentRouter = require('./route/comment.route');
 const mailRouter = require('./route/mail.route');
 
+const User = require('./models/user');
+
 const logDirectory = path.join(__dirname, 'log');
 const port = process.env.PORT || 8080;
 const app = express();
+```
 
-// Logging
+> Logolás Morgan használatával
+
+```javascript
 if (!fs.existsSync(logDirectory)) {
     fs.mkdirSync(logDirectory);
 }
@@ -361,20 +381,37 @@ app.use(morgan('combined', {
     stream: accessLogStream,
     skip: (req, res) => res.statusCode < 400,
 }));
+```
 
-// Security
+> Helmet package használata
+
+> A helmet 12 kissebb middleware gyűjteménye, aminek a használatával biztonságosabbá tehetjük express szerverünket különféle header-ek beállításával. Segítségével többek között:
+* Kikapcsolhatjuk a böngészők DNS prefetch-elését
+* Letilthatjuk az oldalunk iframe-be helyezését, hogy megakadályozzuk a clickjack támadásokat
+* Megakadályozhatjuk a X-Powered-By header küldését, hogy ne fedjük fel milyen technológiákat használunk at oldalunkon.
+
+```javascript
 app.use(helmet());
+```
 
-// Product pictures folder
+> A lokális /uploads mappánk elérhetővé tétele frontend számára
+
+```javascript
 app.use('/uploads', express.static('uploads'));
+```
 
-// Body Parse middleware
+> A beérkező requestek parse-olása body-parser package middleware-el
+
+```javascript
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: false,
 }));
+```
 
-// Session handling
+> Session kezelés az express-session segítségével
+
+```javascript
 app.use(session({
     secret: 'secret',
     resave: true,
@@ -384,14 +421,21 @@ app.use(session({
         maxAge: 7 * 24 * 60 * 60 * 1000, // seconds which equals 1 week
     },
 }));
+```
 
-// Passport - Auth
+> Felhasználók autentikációja a Passport package-el
+
+```javascript
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+```
 
+> Csatlakozás a MongoDB adatbázisunkhoz a config.js-ben megadott adatok alapján
+
+```javascript
 // Connect to MongoDB
 mongoose.connect(db.uri, db.options)
     .then(() => {
@@ -400,8 +444,28 @@ mongoose.connect(db.uri, db.options)
     .catch((err) => {
         console.error(`MongoDB error.:${err}`);
     });
+```
+> ---
+### config.js
+```javascript
+const password = '12345678';
+const user = 'foobar';
 
-// CORS for frontend
+module.exports = {
+  uri: `mongodb://${user}:${password}@ds217970.mlab.com:17970/lightining-foobar`,
+  options: {
+    connectTimeoutMS: 5000,
+    reconnectTries: Number.MAX_VALUE,
+    reconnectInterval: 500,
+    useMongoClient: true,
+  },
+};
+```
+> ---
+
+> CORS beállítások
+
+```javascript
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Credentials', true);
     res.header('Access-Control-Allow-Origin', 'http://localhost:4200');
@@ -412,23 +476,22 @@ app.use((req, res, next) => {
     }
     return next();
 });
+```
 
-// User User router
+> Route-ok és router fájlok kezelése
+
+```javascript
 app.use('/user/', userRouter);
 app.use('/products/', productsRouter);
 app.use('/orders/', ordersRouter);
 app.use('/categories/', categoriesRouter);
 app.use('/comments/', commentRouter);
 app.use('/', mailRouter);
+```
 
-// 404 error handling
-app.use((req, res, next) => {
-    const error = new Error('Not Found');
-    error.status = 404;
-    next(error);
-});
+> Kiszabadult error-ok lekezelése
 
-// 500 error
+```javascript
 app.use((error, req, res) => {
     res.status(error.status || 500);
     res.json({
@@ -437,7 +500,10 @@ app.use((error, req, res) => {
         },
     });
 });
+```
 
-// Start server
+> A szerver indítása
+
+```javascript
 app.listen(port);
 ```
