@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 ```
 
-> lowerCaser: A kapott String típusú adatok formázásaa kisbetűssé
+> **lowerCaser**: A kapott String típusú adatok formázása kisbetűssé
 
 ```javascript
 function lowerCaser(body) {
@@ -20,7 +20,7 @@ function lowerCaser(body) {
 }
 ```
 
-> list: Az összes kategória listázása
+> **list**: Az összes kategória listázása
 
 ```javascript
   list: (req, res) => {
@@ -36,7 +36,7 @@ function lowerCaser(body) {
   },
 ```
 
-> find: Egy kategória megjelenítése
+> **find**: Egy kategória megjelenítése
 
 ```javascript
   find: (req, res) => {
@@ -58,7 +58,7 @@ function lowerCaser(body) {
   },
 ```
 
-> create: Egy új kategória létrehozása
+> **create**: Egy új kategória létrehozása
  
 ```javascript
   create: (req, res) => {
@@ -79,7 +79,7 @@ function lowerCaser(body) {
   },
 ```
 
-> update: Egy kategória nevének frissítése
+> **update**: Egy kategória nevének frissítése
 
 ```javascript
   update: (req, res) => {
@@ -107,7 +107,7 @@ function lowerCaser(body) {
   },
 ```
 
-> remove: Egy kategória törlése
+> **remove**: Egy kategória törlése
 
 ```javascript
   remove: (req, res) => {
@@ -206,7 +206,7 @@ mongoose.Promise = require('bluebird');
 
 > A képek feltöltését a multer csomaggal oldottuk meg. A feltöltést a products.route.js kezeli.
 
-> list: Az összes termék listázása
+> **list**: Az összes termék listázása
 
 ```javascript
   list: (req, res) => {
@@ -224,7 +224,7 @@ mongoose.Promise = require('bluebird');
   },
 ```
 
-> find: Egy termék megjelenítése
+> **find**: Egy termék megjelenítése
 
 ```javascript
   find: (req, res) => {
@@ -257,7 +257,7 @@ mongoose.Promise = require('bluebird');
   },
 ```
 
-> create: Egy új termék létrehozása
+> **create**: Egy új termék létrehozása
 
 > A create eljárásban megnézzük, hogy létezik-e feltöltött fájl és ha igen, akkor cask az elérési útvonalát adjuk hozzá a termékhez, mivel szűkös a MLab felhőtárhelyünk.
 
@@ -282,7 +282,7 @@ mongoose.Promise = require('bluebird');
   },
 ```
 
-> update: Egy termék nevének frissítése
+> **update**: Egy termék nevének frissítése
 
 > Hasonlóképpen teszünk az update-nél is, ha létezik új kép akkor felülírjuk az elérési útvonalat. Viszont ekkor a már létező régi képet is (ha létezik ilyen) töröljük. Ha nem kapunk új fájlt, akkor megtartjuk a régi elérési útvonalat és képet. Ezt manuálisan kell visszarakni mielőtt továbbengednénk a mongoDb parancsot, mivel ez a PUT request-nél nálunk csak annyit jelent, hogy frontenden nem kívántak képet változtani.
 
@@ -346,7 +346,7 @@ mongoose.Promise = require('bluebird');
   },
 ```
 
-> remove: Egy termék törlése
+> **remove**: Egy termék törlése
 
 > A remove is leellenőrzi, hogy létezik-e feltöltött kép a termék törlése előtt, ha igen akkor töröljük azt is az /uploads lokális mappánkból.
 
@@ -383,7 +383,7 @@ mongoose.Promise = require('bluebird');
   },
 ```
 
-> addComment: Egy komment hozzáadása
+> **addComment**: Egy komment hozzáadása
 
 ```javascript
   addComment: (productId, commentId) => Products.findByIdAndUpdate(productId, {
@@ -393,7 +393,7 @@ mongoose.Promise = require('bluebird');
   }),
 ```
 
-> removeComment: Egy komment törlése
+> **removeCommen**: Egy komment törlése
 
 ```javascript
   removeComment: (productId, commentId) => Products.findByIdAndUpdate(productId, {
@@ -531,7 +531,7 @@ module.exports = {
 ```
 > ---
 
-> CORS beállítások
+> CORS(Cross-Origin Resource Sharing) beállítások
 
 ```javascript
 app.use((req, res, next) => {
