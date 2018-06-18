@@ -1,20 +1,14 @@
-## To be continued hétvégén
-> Még sokkal több szöveg érkezik a részekhez, illetve a javascript példa függvényeket a leírásukhoz vágom.
-
 ## categories.controller.js
-
-> lowerCaser: A kapott String típusú adatok formázásaa kisbetűssé
-> list: Az összes kategória listázása
-> find: Egy kategória megjelenítése
-> create: Egy új kategória létrehozása
-> update: Egy kategória nevének frissítése
-> remove: Egy kategória törlése
 
 ```javascript
 const Categories = require('../models/categories');
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
+```
 
+> lowerCaser: A kapott String típusú adatok formázásaa kisbetűssé
+
+```javascript
 function lowerCaser(body) {
   const newBody = body;
   Object.keys(newBody).forEach((key) => {
@@ -24,8 +18,11 @@ function lowerCaser(body) {
   });
   return newBody;
 }
+```
 
-module.exports = {
+> list: Az összes kategória listázása
+
+```javascript
   list: (req, res) => {
     Categories.find({})
       .then((categories) => {
@@ -37,7 +34,11 @@ module.exports = {
         });
       });
   },
+```
 
+> find: Egy kategória megjelenítése
+
+```javascript
   find: (req, res) => {
     Categories.findById(req.params.id)
       .then((categories) => {
@@ -55,7 +56,11 @@ module.exports = {
         });
       });
   },
+```
 
+> create: Egy új kategória létrehozása
+ 
+```javascript
   create: (req, res) => {
     let body = JSON.stringify(req.body);
     body = JSON.parse(body);
@@ -72,7 +77,11 @@ module.exports = {
         });
       });
   },
+```
 
+> update: Egy kategória nevének frissítése
+
+```javascript
   update: (req, res) => {
     let body = JSON.stringify(req.body);
     body = JSON.parse(body);
@@ -96,7 +105,11 @@ module.exports = {
           });
         }));
   },
+```
 
+> remove: Egy kategória törlése
+
+```javascript
   remove: (req, res) => {
     Categories.findByIdAndRemove(req.params.id)
       .then((categories) => {
@@ -114,7 +127,6 @@ module.exports = {
         });
       });
   },
-};
 ```
 
 ## products.controller.js
