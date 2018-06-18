@@ -128,6 +128,72 @@ function lowerCaser(body) {
       });
   },
 ```
+> ---
+
+## products.route.js
+
+```javascript
+const express = require('express');
+const multer = require('multer');
+
+const productsRouter = express.Router();
+const productsController = require('../controller/products.controller');
+```
+
+> A requestekben kapott fájljainkat a multer package segítségével validáljuk, nevezzük át és helyezzük el a lokális /uploads mappánkban.
+
+> Elsőként beállítjuk a célmappánkat, illetve minden képnek egy új nevet generálunk feltöltési idő alapján, hogy ne legyen konfliktus egyező név esetén.
+
+```javascript
+const storage = multer.diskStorage({
+  destination(req, file, cb) {
+    cb(null, './uploads');
+  },
+  filename(req, file, cb) {
+    const fullFileName = new Date().toISOString().replace(/:/g, '-').concat(file.originalname.substr(file.originalname.indexOf('.')));
+    cb(null, fullFileName);
+  },
+});
+```
+
+> Itt a fájlok kiterjesztés alapú validálása történik. Csak .jpeg és .png képeket fogadunk.
+
+```javascript
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+```
+
+> Itt a képek maximálisan engedélyezett méretét szabjuk meg, ami 2Mb.
+
+```javascript
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: {
+    fileSize: 1024 * 1024 * 2,
+  },
+});
+```
+
+> Kérések továbbengedése a controller fájlhoz. Mivel képfeltöltés csak post illetve put esetén lehetséges, így csak ezeknél hívjuk meg a multer-t.
+
+```javascript
+productsRouter.route('/')
+  .get(productsController.list)
+  .post(loggedIn, upload.single('productImg'), productsController.create);
+
+productsRouter.route('/:id')
+  .get(productsController.find)
+  .put(loggedIn, upload.single('productImg'), productsController.update)
+  .delete(loggedIn, productsController.remove);
+```
+
+> ---
 
 ## products.controller.js
 
@@ -336,6 +402,8 @@ mongoose.Promise = require('bluebird');
     },
   }),
 ```
+
+> ---
 
 ## server.js
 
