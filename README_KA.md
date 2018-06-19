@@ -69,30 +69,75 @@ module.exports = mongoose.model('Order', orderSchema);
 ```
 ## Order controller
 
-```mermaid
-graph TB
 
-A((Component)) -- kérés --> B(Route)
-subgraph Frontend
-A
-end
-subgraph Backend
-B --> C(Controller)
-C --- D{Model}
-C -- válasz --> A
-end
-C --> E
-E --> C
-subgraph Database
-E[Database]
-end
-
-style A fill:#ffF,stroke:#333,stroke-width:2px
-style B fill:#f99,stroke:#333,stroke-width:2px
-style C fill:#9f9,stroke:#333,stroke-width:2px
-style D fill:#ff9,stroke:#333,stroke-width:2px,stroke-dasharray: 10
-style E fill:#ff9,stroke:#333,stroke-width:4px
+```javascript
+{
+    __v: 0,
+    updatedAt: "2018-06-19T10:14:46.393Z",
+    createdAt: "2018-06-19T10:14:46.393Z",
+    user: "5af9de46dbfa24184ce3090b",
+    _id: "5b28d796d048401fb8fd9b00",
+    products: [
+        {
+            product: "5afc2bc465eb1eabd8370ab6",
+            quantity: 10,
+            _id: "5b28d796d048401fb8fd9b03"
+        },
+        {
+            product: "5afbeeecf91d408798465790",
+            quantity: 5,
+            _id: "5b28d796d048401fb8fd9b02"
+        },
+        {
+            product: "5af99826722bf5522c3d40a1",
+            quantity: 3,
+            _id: "5b28d796d048401fb8fd9b01"
+        }
+    ]
+}
 ```
+```javascript
+{
+    _id: "5b28d796d048401fb8fd9b00",
+    updatedAt: "2018-06-19T10:14:46.393Z",
+    createdAt: "2018-06-19T10:14:46.393Z",
+    user: {
+        _id: "5af9de46dbfa24184ce3090b",
+        username: "Marton16"
+    },
+    __v: 0,
+    products: [
+        {
+            product: {
+                _id: "5afc2bc465eb1eabd8370ab6",
+                productName: "Borsodi",
+                productPrice: 215
+            },
+            quantity: 10,
+            _id: "5b28d796d048401fb8fd9b03"
+        },
+        {
+            product: {
+                _id: "5afbeeecf91d408798465790",
+                productName: "Becherovka",
+                productPrice: 4999
+            },
+            quantity: 5,
+            _id: "5b28d796d048401fb8fd9b02"
+        },
+        {
+            product: {
+                _id: "5af99826722bf5522c3d40a1",
+                productName: "Jack Daniels",
+                productPrice: 5800
+            },
+            quantity: 3,
+            _id: "5b28d796d048401fb8fd9b01"
+        }
+    ]
+}
+```
+
 
 ```javascript
 const Order = require('../models/order');
