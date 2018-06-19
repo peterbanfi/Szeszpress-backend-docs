@@ -1,9 +1,98 @@
-## Orders
+# Orders
 
-> Rendelés leadása
-> Rendelés módsítása/ törlése
-> Listázás: Populate vs Join
->
+- Rendelés leadása
+- Rendelés módsítása/ törlése
+- Listázás: Populate vs Join
+
+
+## Order model
+```javascript
+const mongoose = require('mongoose');
+
+const orderSchema = mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  address: {
+    city: {
+      type: String,
+      required: false,
+    },
+    address: {
+      type: String,
+      required: false,
+    },
+    address2: {
+      type: String,
+    },
+    zip: {
+      type: Number,
+      required: false,
+    },
+  },
+  invoiceAddress: {
+    city: {
+      type: String,
+      required: false,
+    },
+    address: {
+      type: String,
+      required: false,
+    },
+    address2: {
+      type: String,
+    },
+    zip: {
+      type: Number,
+      required: false,
+    },
+  },
+  products: [{
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: true,
+    },
+    quantity: {
+      type: Number,
+      required: true,
+    },
+  }],
+}, {
+  timestamps: true,
+});
+
+
+module.exports = mongoose.model('Order', orderSchema);
+```
+## Order controller
+
+```mermaid
+graph TB
+
+A((Component)) -- kérés --> B(Route)
+subgraph Frontend
+A
+end
+subgraph Backend
+B --> C(Controller)
+C --- D{Model}
+C -- válasz --> A
+end
+C --> E
+E --> C
+subgraph Database
+E[Database]
+end
+
+style A fill:#ffF,stroke:#333,stroke-width:2px
+style B fill:#f99,stroke:#333,stroke-width:2px
+style C fill:#9f9,stroke:#333,stroke-width:2px
+style D fill:#ff9,stroke:#333,stroke-width:2px,stroke-dasharray: 10
+style E fill:#ff9,stroke:#333,stroke-width:4px
+```
 
 ```javascript
 const Order = require('../models/order');
@@ -60,10 +149,34 @@ module.exports = {
 };
 ```
 
-## Comment
-> Komment hozzáadása: több tábla együttes módosítása
+# Comment
+- Komment hozzáadása: több tábla együttes módosítása
 >
 
+## Comment model
+
+```javascript
+const mongoose = require('mongoose');
+
+const commentSchema = mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  text: {
+    type: String,
+    required: true,
+  },
+}, {
+  timestamps: true,
+});
+
+
+module.exports = mongoose.model('Comment', commentSchema);
+
+```
+## Comment controller
 ```javascript
 const Comment = require('../models/comment');
 const productController = require('../controller/products.controller');
@@ -121,10 +234,10 @@ module.exports = {
 };
 ```
 
-## Tesztek
+# Tesztek
 
-> Miért kellenek tesztek?
-> Unit testing
+- Miért kellenek tesztek?
+- Unit testing
 > 
 
 
