@@ -1,9 +1,18 @@
 ## user.controller.js
 
-> listAll: összes regisztrált felhasználó listázása
-> register: felhasználó regisztrálása név, e-mail és jogosultsággal.
-> update: a felhasználó adatainak frissítése. Új jelszó is lehetséges.
-> getOne: adott id-jú felhasználó keresése.
+> A user.controller.js segítségével, felhasználókat tudunk létrehozni, szerkeszteni, törölni, vagy keresni.
+
+> **profile**: a bejelentkezett felhasználó, saját adatait adja vissza.
+> 
+> **listAll**: összes regisztrált felhasználó listázása.
+> 
+> **register**: felhasználó regisztrálása név, e-mail és jogosultsággal.
+> 
+> **update**: a felhasználó adatainak frissítése. A *changePassword* metódusa a passport-local-mongoose egyik beépített metódusa, mely segítségével, frissíthetjük a felhasználó jelszavát.
+> 
+> **getOne**: adott id-jú felhasználó keresése. Ha nem találja a megadott felhasználót, akkor 404-es hibakóddal tér vissza, ha pedig sikeresen megtalálta, 200-as kóddal, és a felhasználó adataival.
+> 
+> **remove**: adott id-jú felhasználó törlése.
 
 ```javascript
 const User = require('../models/user');
@@ -96,11 +105,13 @@ module.exports = {
 ```
 
 ## user.route.js
-> A user route a felhasználókért felel. A *get, put, post és delete* műveleteket a user controllerében definiáltuk.
+> A *user.route* a felhasználókért felel. A *get, put, post és delete* műveleteket a user controllerében definiáltuk.
 
-> A loggedInUser függvény megvizsgálja, hogy van-e báárki is bejelentkezve.
-> A loggedIn füügvvény pedig, azt vizsgálja, adminként van-e bejelentkezve.
-> Ezzel a módszerrel szabjuk meg ki és mit használhat a CRUD műveletek közül. 
+> A loggedInUser függvény megvizsgálja, hogy van-e bárki is bejelentkezve.
+> 
+> A loggedIn füügvény pedig, azt vizsgálja, milyen jogosultsággal van bejelentkezve a felhasználó. Ha a jogosultsága **true**, akkor a felhasználó admin, és joga van bármely regisztrált felhasználón módosításokat végezni, úgy mint: *kilistázni az összeset, törölni őket, más jogosultságot adni nekik, vagy létrehozni újakat*.
+> 
+> Ha a felhasználó nem admin jogosultságú, akkor csak a saját profilját érheti el, és módosíthatja.
 
 ```javascript
 const passport = require('passport');
@@ -114,12 +125,12 @@ function loggedIn(req, res, next) {
       next();
     } else {
       res.status(500).json({
-        error: 'Wrong Rights!',
+        error: 'Nem megfelelő jogosultság!',
       });
     }
   } else {
     res.status(500).json({
-      error: 'Access Denied!',
+      error: 'Belépés megtagadva!',
     });
   }
 }
@@ -129,7 +140,7 @@ function loggedInUser(req, res, next) {
     next();
   } else {
     res.status(500).json({
-      error: 'Access Denied!',
+      error: 'Belépés megtagadva!',
     });
   }
 }
@@ -149,11 +160,17 @@ module.exports = userRouter;
 
 
 ## mail.route.js
-> A nodemailer package segítségével, könnyedén küldhet e-mailben feedbacket a felhasználó.
-> Külön route-ban kiszervezve, a kód nem rondítja a server.js-t.
+> A webshpunkon levő *Kapcsolat* oldalon, nodemailer package segítségével, könnyedén küldhet a felhasználó visszajelzést nekünk.
+> 
+> Külön route-ban kiszervezve, a kód nem rondítja a server.js-t, és jól átlátható marad.
 
-> Biztonsági okokból az e-mail fiók jelszavát cenzúráztuk.
+> A **nodeMailer** beépített metódusában, a *createTransport*-ben megadtuk a szolgáltó nevét, host címét és port számát, illetve a saját e-mail fiókunk adatait, hogy ezen keresztül legyen elérhető a felhasználó üzenete számunkra.
+> 
 > Mint látható, gmail fiókot használunk.
+> 
+> A *mailOptions*-ben eltároljuk az e-mail minden fontos elemét. Például, hogy kitől jött az üzenet, az üzenet tárgyát, és persze az üzenet tartalmát.
+
+
 
 ```javascript
 const nodeMailer = require('nodemailer');
@@ -167,7 +184,7 @@ mailRouter.post('/send', (req, res, next) => {
     secure: true,
     auth: {
       user: 'szeszpress@gmail.com',
-      pass: '************',
+      pass: 'szeszpress2018',
     }
   });
   const mailOptions = {
