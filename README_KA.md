@@ -69,7 +69,7 @@ module.exports = mongoose.model('Order', orderSchema);
 ```
 ## Order controller
 
-
+### Nyers objektum 
 ```javascript
 {
     __v: 0,
@@ -96,6 +96,7 @@ module.exports = mongoose.model('Order', orderSchema);
     ]
 }
 ```
+### Objektum populate után 
 ```javascript
 {
     _id: "5b28d796d048401fb8fd9b00",
